@@ -16,11 +16,19 @@ class TaskViewModel : ViewModel() {
 
     private val _selectedTask = MutableStateFlow<Task?>(null)
     val selectedTask: StateFlow<Task?> = _selectedTask.asStateFlow()
+    val addTaskDialogVisible = MutableStateFlow<Boolean>(false)
 
+
+    fun openTask(id: Int) {
+        val task = _tasks.value.find { it.id == id }
+        _selectedTask.value = task
+    }
 
     fun addTask(task: Task) {
         _allTasks.value = _allTasks.value + task
         _tasks.value = _allTasks.value
+        addTaskDialogVisible.value = false
+
     }
 
     fun toggleDone(id: Int) {

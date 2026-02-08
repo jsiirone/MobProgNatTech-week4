@@ -8,10 +8,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,15 +32,43 @@ import com.example.mobprognattech_week3.viewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: TaskViewModel = viewModel()) {
+fun HomeScreen(
+    viewModel: TaskViewModel = viewModel(),
+    onTaskClick: (Int) -> Unit = {},
+    onAddClick: () -> Unit = {},
+    onNavigateCalendar: () -> Unit = {},
+    onNavigateSettings: () -> Unit = {}
+
+) {
     val tasks by viewModel.tasks.collectAsState()
     val selectedTask by viewModel.selectedTask.collectAsState()
+    val addTaskFlag by viewModel.addTaskDialogVisible.collectAsState()
+
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Tasks", style = MaterialTheme.typography.headlineMedium) },
                 actions = {
+                    IconButton(onClick = onAddClick) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Create new task"
+                        )
+                    }
+                    IconButton(onClick = onNavigateSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Go to settings"
+                        )
+                    }
+                    IconButton(onClick = onNavigateCalendar) {
+                        Icon(
+                            imageVector = Icons.Default.CalendarMonth,
+                            contentDescription = "Go to calendar"
+                        )
+                    }
+
                 }
             )
         },
@@ -71,7 +105,8 @@ fun HomeScreen(viewModel: TaskViewModel = viewModel()) {
                     Card(
                         modifier = Modifier
                             .padding(8.dp)
-                            .clickable { viewModel.selectTask(task) }) {
+                            .clickable { onTaskClick(task.id) }
+                    ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -98,6 +133,12 @@ fun HomeScreen(viewModel: TaskViewModel = viewModel()) {
                 onClose = { viewModel.closeDialog() },
                 onUpdate = { viewModel.updateTask(it) },
                 onDelete = { viewModel.removeTask(selectedTask!!.id) })
+        }
+        if (addTaskFlag) {
+            AddDialog(
+                onClose = { viewModel.addTaskDialogVisible.value = false },
+                onUpdate = { viewModel.addTask(it) }
+            )
         }
     }
 }
