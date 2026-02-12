@@ -1,2 +1,2 @@
-\## https://youtu.be/UGvtXGpKcjY
+\## viikon vidska: https://youtu.be/UGvtXGpKcjY
 
